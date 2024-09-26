@@ -34,3 +34,8 @@ def process_log_file(cur, filepath):
     for data in t:
         time_data.append([data,data.hour, data.day, data.weekofyear, data.month, data.year, data.day_name()])
 
+    time_df=pd.DataFrame(data=time_data, columns=column_labels)
+
+    for i, row in time_df.iterrows():
+        cur.execute(time_table_insert, list(row))
+
