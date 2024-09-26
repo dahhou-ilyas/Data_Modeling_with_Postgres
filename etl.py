@@ -19,3 +19,18 @@ def process_song_file(cur, filepath):
 
     print(f"Records inserted for file {filepath}")
 
+
+def process_log_file(cur, filepath):
+    df = df = pd.read_json(filepath, lines=True)
+
+    df = df[df['page'] == "NextSong"].astype({'ts': 'datetime64[ms]'})
+
+    t = pd.Series(df['ts'], index=df.index)
+
+    column_labels = ["timestamp", "hour", "day", "weelofyear", "month", "year", "weekday"]
+
+    time_data = []
+
+    for data in t:
+        time_data.append([data,data.hour, data.day, data.weekofyear, data.month, data.year, data.day_name()])
+
