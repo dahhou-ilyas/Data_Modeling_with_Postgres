@@ -40,3 +40,19 @@ def process_log_file(cur, filepath):
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
 
+    user_df = df[['userId', 'firstName', 'lastName', 'gender', 'level']]
+
+    for i, row in user_df.iterrows():
+        cur.execute(user_table_insert, row)
+
+    for index, row in df.iterrows():
+        cur.execute(song_select, (row.song, row.artist, row.length))
+        results = cur.fetchone()
+        if results:
+            songid, artistid = results
+        else:
+            songid, artistid = None, None
+
+        songplay_data = (row.ts, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
+
+        cur.execute(songplay_table_insert, songplay_data)
