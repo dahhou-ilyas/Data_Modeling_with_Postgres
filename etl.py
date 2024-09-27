@@ -38,12 +38,12 @@ def process_log_file(cur, filepath):
     time_df=pd.DataFrame(data=time_data, columns=column_labels)
 
     for i, row in time_df.iterrows():
-        cur.execute(time_table_insert, list(row))
+        cur.execute(time_table_insert, row.values.tolist())
 
     user_df = df[['userId', 'firstName', 'lastName', 'gender', 'level']]
 
     for i, row in user_df.iterrows():
-        cur.execute(user_table_insert, row)
+        cur.execute(user_table_insert, row.values.tolist())
 
     for index, row in df.iterrows():
         cur.execute(song_select, (row.song, row.artist, row.length))
