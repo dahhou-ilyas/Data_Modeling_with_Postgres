@@ -58,4 +58,32 @@ def process_log_file(cur, filepath):
         cur.execute(songplay_table_insert, songplay_data)
 
 def process_data(cur, conn, filepath, func):
-    pass
+    all_files=[]
+    for root, dir, files in os.walk(filepath):
+        files=glob.glob(os.path.join(root,'*.json'))
+        for f in files:
+            all_files.append(os.path.abspath(f))
+
+    num_files = len(all_files)
+
+    print('{} files found in {}'.format(num_files, filepath))
+
+    for i, datafile in enumerate(all_files,1):
+        func(cur, datafile)
+        conn.commit()
+        print('{}/{} files processed.'.format(i, num_files))
+
+
+def main():
+    conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=postgres password=monmotdepasse port=5433")
+
+    cur = conn.cursor()
+
+    process_data(cur, conn, filepath='data/song_data', func=process_song_file)
+    process_data(cur, conn, filepath='data/log_data', func=process_log_file)
+
+    conn.close()
+
+if __name__ == '__main__':
+    main()
+    print("\n\nFinished processing!!!\n\n")
